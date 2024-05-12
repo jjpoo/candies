@@ -12,15 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.android.candywords.state.CandyUiState
 import com.android.candywords.state.ToolbarIcons
 
 @Composable
 fun GameToolbar(
+    listOfToolbarItems: List<ToolbarIcons>,
     modifier: Modifier = Modifier,
-    leftButtonModifier: Modifier = Modifier,
-    state: CandyUiState,
-    onLeftIconClicked: () -> Unit = {},
+    toolbarIconModifier: Modifier = Modifier,
+    onToolbarItemClicked: (String) -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -28,20 +27,19 @@ fun GameToolbar(
             .padding(16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ToolbarIcons.values().forEach {
-            if (it.isShown) {
-                Image(
-                    painter = painterResource(id = it.iconRes),
-                    contentDescription = null,
-                    modifier = leftButtonModifier
-                        .size(62.dp)
-                        .clickable(
-                            enabled = !state.isAchievementsShown
-                        ) {
-                            onLeftIconClicked()
-                        }
-                )
-            }
+        listOfToolbarItems.forEach { icon ->
+
+            Image(
+                painter = painterResource(id = icon.iconRes),
+                contentDescription = null,
+                modifier = toolbarIconModifier
+                    .size(62.dp)
+                    .clickable(
+                        enabled = icon.isShown
+                    ) {
+                        onToolbarItemClicked(icon.name)
+                    }
+            )
         }
     }
 }
@@ -51,7 +49,7 @@ fun GameToolbar(
 fun GameToolbarPreview() {
     GameToolbar(
         modifier = Modifier,
-        state = CandyUiState(),
-        onLeftIconClicked = {},
+        listOfToolbarItems = listOf(),
+        onToolbarItemClicked = {},
     )
 }

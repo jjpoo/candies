@@ -1,5 +1,6 @@
 package com.android.candywords.launcher
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -14,9 +15,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.android.candywords.MainViewModel
-import com.android.candywords.MenuScreen
 import com.android.candywords.R
+import com.android.candywords.ShopActivity
+import com.android.candywords.game.GameActivity
+import com.android.candywords.launcher.screens.GameLauncherScreen
+import com.android.candywords.launcher.screens.MenuScreen
 import com.android.candywords.navigation.NavGraph
+import com.android.candywords.settings.SettingsActivity
 import com.android.candywords.ui.theme.CandyWordsTheme
 
 class LauncherActivity : ComponentActivity() {
@@ -45,11 +50,19 @@ class LauncherActivity : ComponentActivity() {
                         }
                     ) {
                         GameLauncherScreen(
-                            text = stringResource(id = R.string.app_name),
-                            launcherBacImageRes = R.drawable.loading_fill,
-                            expanded = true,
-                            navigateToMainScreen = {
-                                navController.navigate(NavGraph.Menu.route)
+                            state = uiState.value,
+                            uiEvent = viewModel::handleUiEvent,
+                            onPlayClicked = {
+                                navigateToGameScreen()
+                            },
+                            onShopClicked = {
+                                navigateToShopScreen()
+                            },
+                            onSettingsClicked = {
+                                navigateToSettingsScreen()
+                            },
+                            closeApp = {
+                                finish()
                             }
                         )
                     }
@@ -59,18 +72,42 @@ class LauncherActivity : ComponentActivity() {
                             slideIntoContainer(
                                 AnimatedContentTransitionScope.SlideDirection.Right,
                                 animationSpec = spring(
-                                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                                    dampingRatio = Spring.DampingRatioLowBouncy,
                                     stiffness = Spring.StiffnessVeryLow
                                 )
                             )
                         }
                     ) {
                         MenuScreen(
-                            state = uiState.value
+                            state = uiState.value,
+                            onPlayClicked = {
+                                navigateToGameScreen()
+                            },
+                            onShopClicked = {
+                                navigateToShopScreen()
+                            },
+                            onSettingsClicked = {
+                                navigateToSettingsScreen()
+                            },
+                            closeApp = {
+                                finish()
+                            }
                         )
                     }
                 }
             }
         }
+    }
+
+    private fun navigateToGameScreen() {
+        startActivity(Intent(this@LauncherActivity, GameActivity::class.java))
+    }
+
+    private fun navigateToSettingsScreen() {
+        startActivity(Intent(this@LauncherActivity, SettingsActivity::class.java))
+    }
+
+    private fun navigateToShopScreen() {
+        startActivity(Intent(this@LauncherActivity, ShopActivity::class.java))
     }
 }
