@@ -1,9 +1,9 @@
-package com.android.candywords.settings
+package com.android.candywords.main.screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,7 +20,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.android.candywords.R
-import com.android.candywords.launcher.screens.MenuScreen
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import com.android.candywords.state.ToolbarIcons
@@ -30,38 +29,50 @@ import com.android.candywords.utils.OutlinedText
 @Composable
 fun SettingsScreen(
     state: CandyUiState,
-    uiEvent: (CandyUiEvent) -> Unit
+    uiEvent: (CandyUiEvent) -> Unit,
+    saveSettings: () -> Unit,
+    onCrossClicked: () -> Unit
 ) {
     val crossItem = ToolbarIcons.entries.find { it.name == ToolbarIcons.CROSS.name }
+    val shopItem = ToolbarIcons.entries.find { it.name == ToolbarIcons.SHOP.name }
 
-    val listOfItems = listOf(crossItem).requireNoNulls()
+    val listOfItems = listOf(shopItem, crossItem).requireNoNulls()
 
-    Box(
+    Image(
+        painter = painterResource(id = R.drawable.bg_shadow_hdpi),
+        contentDescription = null,
+        contentScale = ContentScale.FillBounds,
         modifier = Modifier.fillMaxSize()
-    ) {
-        MenuScreen(
-            state = state,
-            toolbarIconModifier = Modifier
-        )
-        Image(
-            painter = painterResource(id = R.drawable.bg_shadow_hdpi),
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.FillBounds
-        )
-        GameToolbar(
-            listOfToolbarItems = listOfItems
-        )
-        SettingsContent(
-            state = state,
-        )
-    }
+    )
+    GameToolbar(
+        listOfToolbarItems = listOfItems,
+        firstItemAlpha = 0f,
+        isGameScreen = false,
+        onItemClicked = {
+            Log.e("STRING", it)
+            if (it == ToolbarIcons.CROSS.name) {
+                uiEvent(CandyUiEvent.OnSettingsClicked)
+            }
+        }
+    )
+    SettingsContent(
+        state = state,
+        onSettingItemClicked = {
+            Log.e("NAME", "${it}")
+            uiEvent(CandyUiEvent.OnSettingsSelected(it))
+        },
+        onSaveClicked = {
+            saveSettings()
+            uiEvent(CandyUiEvent.OnSettingsClicked)
+        }
+    )
 }
 
 @Composable
 fun SettingsContent(
     state: CandyUiState,
-    onSettingItemClicked: (Int) -> Unit = {}
+    onSettingItemClicked: (Int) -> Unit = {},
+    onSaveClicked: () -> Unit
 ) {
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
@@ -78,10 +89,12 @@ fun SettingsContent(
                     bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
-                .height(230.dp)
-                .width(280.dp)
+                .fillMaxWidth()
+                .height(350.dp)
+                .padding(horizontal = 20.dp)
         )
         SettingsItems(
+            state = state,
             modifier = Modifier
                 .constrainAs(content) {
                     start.linkTo(box.start)
@@ -89,29 +102,40 @@ fun SettingsContent(
                     end.linkTo(box.end)
                     bottom.linkTo(box.bottom)
                 }
-                .padding(horizontal = 40.dp),
-            state = state
+                .padding(horizontal = 50.dp),
+            onSettingItemClicked = onSettingItemClicked
         )
 
         Image(
             painter = painterResource(id = R.drawable.title_settings_hdpi),
             contentDescription = null,
             modifier = Modifier
+                .fillMaxWidth()
                 .constrainAs(settingsTitle) {
                     start.linkTo(box.start)
                     top.linkTo(box.top)
                     end.linkTo(box.end)
                 }
+                .padding(horizontal = 40.dp),
+            contentScale = ContentScale.Crop
         )
+
         Image(
             painter = painterResource(id = R.drawable.btn_save_hdpi),
             contentDescription = null,
             modifier = Modifier
+                .fillMaxWidth()
                 .constrainAs(saveTitle) {
                     start.linkTo(box.start)
                     bottom.linkTo(box.bottom)
                     end.linkTo(box.end)
                 }
+                .padding(horizontal = 100.dp)
+                .padding(top = 50.dp)
+                .clickable {
+                    onSaveClicked()
+                },
+            contentScale = ContentScale.FillWidth
         )
     }
 }
@@ -123,8 +147,8 @@ fun SettingsItems(
     onSettingItemClicked: (Int) -> Unit = {}
 ) {
     Column(
-        modifier = modifier.padding(horizontal = 40.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        modifier = modifier.padding(horizontal = 20.dp),
+        verticalArrangement = Arrangement.spacedBy(25.dp)
     ) {
         state.settings.forEachIndexed { index, item ->
             SettingsItemRow(
@@ -147,6 +171,7 @@ fun SettingsItemRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(40.dp)
             .clickable {
                 onClick()
             },
@@ -156,12 +181,15 @@ fun SettingsItemRow(
         OutlinedText(text = text)
         Image(
             painter = painterResource(
-                id = if (isToggled) {
+                id = if (!isToggled) {
                     R.drawable.switch_off_hdpi
                 } else {
                     R.drawable.switch_on_hdpi
                 }
             ),
+            modifier = Modifier
+                .width(80.dp)
+                .height(30.dp),
             contentDescription = null
         )
     }
@@ -170,7 +198,7 @@ fun SettingsItemRow(
 @Preview
 @Composable
 fun SettingsScreenPreview() {
-    SettingsScreen(state = CandyUiState(), {})
+    SettingsScreen(state = CandyUiState(), {}, {}, {})
 }
 
 @Preview

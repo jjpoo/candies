@@ -1,4 +1,4 @@
-package com.android.candywords.launcher.screens
+package com.android.candywords.main.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.android.candywords.R
+import com.android.candywords.connectivity.ConnectivityObserver
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import com.android.candywords.state.ToolbarIcons
@@ -39,14 +40,19 @@ import com.android.candywords.utils.OutlinedText
 import kotlinx.coroutines.delay
 
 @Composable
-fun GameLauncherScreen(
+fun MainScreen(
     state: CandyUiState,
     uiEvent: (CandyUiEvent) -> Unit = {},
     onPlayClicked: () -> Unit = {},
-    onSettingsClicked: () -> Unit = {},
     onShopClicked: () -> Unit = {},
-    closeApp: () -> Unit = {}
+    closeApp: () -> Unit = {},
+    saveSettings: () -> Unit = {},
+    retry: () -> Unit = {}
 ) {
+
+    if (state.connectivityStatus != ConnectivityObserver.Status.Available) {
+        uiEvent(CandyUiEvent.ShowNoInternetConnectionPopup(true))
+    }
 
     BackHandler {
         closeApp()
@@ -59,7 +65,7 @@ fun GameLauncherScreen(
     val shopItem = ToolbarIcons.entries.find { it.name == ToolbarIcons.SHOP.name }
     val settingsItem = ToolbarIcons.entries.find { it.name == ToolbarIcons.SETTINGS.name }
 
-    val listOfItems = listOf(shopItem, settingsItem)
+    val listOfItems = mutableListOf(shopItem, settingsItem)
 
     var hideContent by remember {
         mutableStateOf(false)
@@ -75,7 +81,7 @@ fun GameLauncherScreen(
 
     LaunchedEffect(key1 = Unit) {
         expanded = !expanded
-        delay(2000L)
+//        delay(2000L)
         hideContent = !hideContent
         isTextVisible = !isTextVisible
         uiEvent(CandyUiEvent.OnMenuScreenVisible)
@@ -92,8 +98,7 @@ fun GameLauncherScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize(),
+        modifier = Modifier.fillMaxSize()
     ) {
         Image(
             painter = painterResource(id = R.drawable.bg_menu),
@@ -112,10 +117,13 @@ fun GameLauncherScreen(
             GameToolbar(
                 listOfToolbarItems = listOfItems.requireNoNulls(),
                 toolbarIconModifier = Modifier,
-                onToolbarItemClicked = {
+                isGameScreen = false,
+                onItemClicked = {
                     when (it) {
                         ToolbarIcons.SHOP.name -> onShopClicked()
-                        ToolbarIcons.SETTINGS.name -> onSettingsClicked()
+                        ToolbarIcons.SETTINGS.name -> {
+                            uiEvent(CandyUiEvent.OnSettingsClicked)
+                        }
                     }
                 }
             )
@@ -168,6 +176,30 @@ fun GameLauncherScreen(
                 text = stringResource(id = R.string.please_wait)
             )
         }
+
+        if (state.isSettingsShown) {
+
+            uiEvent(CandyUiEvent.UpdateToolbarButtonState(ToolbarIcons.SETTINGS.name))
+
+            SettingsScreen(
+                state = state,
+                uiEvent = uiEvent,
+                saveSettings = {
+                    saveSettings()
+                },
+                onCrossClicked = {
+                    uiEvent(CandyUiEvent.OnSettingsClicked)
+                }
+            )
+        }
+
+        if (state.isNoInternetPopupShown) {
+            NoInternetConnectionScreen(
+                state = state,
+                uiEvent = uiEvent,
+                retry = retry
+            )
+        }
     }
 }
 
@@ -215,8 +247,8 @@ fun ConstraintLoadingImage(
 @Preview
 @Composable
 fun GameLauncherScreenPreview() {
-    GameLauncherScreen(
-        state = CandyUiState()
+    MainScreen(
+        state = CandyUiState(isSettingsShown = true)
     )
 }
 

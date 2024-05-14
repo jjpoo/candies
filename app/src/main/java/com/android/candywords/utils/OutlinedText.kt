@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.sp
 import com.android.candywords.R
 
 val textStyleOutlined = TextStyle.Default.copy(
-    fontSize = 20.sp,
+    fontSize = 25.sp,
     textAlign = TextAlign.Center,
     fontFamily = FontFamily(Font(R.font.titan_one_regular)),
     fontWeight = FontWeight(400),
@@ -36,7 +36,7 @@ val textStyleFilled = TextStyle.Default.copy(
     fontWeight = FontWeight(400),
     fontFamily = FontFamily(Font(R.font.titan_one_regular)),
     lineHeight = TextUnit(22.9F, TextUnitType.Unspecified),
-    fontSize = 20.sp,
+    fontSize = 25.sp,
     color = Color.White,
     textAlign = TextAlign.Center
 )
@@ -48,20 +48,26 @@ fun OutlinedText(
     styleFill: TextStyle = textStyleFilled,
     styleOutlined: TextStyle = textStyleOutlined,
     text: String,
-    textAlign: TextAlign = TextAlign.Left
+    lineHeight: TextUnit = TextUnit(22.9F, TextUnitType.Unspecified),
+    textAlign: TextAlign = TextAlign.Left,
+    fontSize: TextUnit = 25.sp
 ) {
     Box(
         modifier = modifier
     ) {
         Text(
+            lineHeight = lineHeight,
             text = text,
+            fontSize = fontSize,
             style = styleFill,
             textAlign = textAlign
         )
         Text(
+            lineHeight = lineHeight,
             text = text,
             style = styleOutlined,
             textAlign = textAlign,
+            fontSize = fontSize,
             color = colorResource(id = R.color.purple_outline)
         )
     }
