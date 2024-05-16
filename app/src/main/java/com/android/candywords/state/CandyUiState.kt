@@ -1,5 +1,6 @@
 package com.android.candywords.state
 
+import androidx.compose.ui.graphics.Color
 import com.android.candywords.R
 import com.android.candywords.connectivity.ConnectivityObserver
 import com.android.candywords.data.Level
@@ -24,7 +25,8 @@ data class CandyUiState(
     val personSelection: List<Item> = listOf(),
     val money: Int = 0,
     val isMoneyEqualsOrLessZero: Boolean = false,
-    val soundOptionsState: List<SoundOption> = soundOptions
+    val soundOptionsState: List<SoundOption> = soundOptions,
+    val color: Color = Color.Magenta
 )
 
 data class Item(
@@ -32,7 +34,8 @@ data class Item(
     val character: Char,
     val isSelected: Boolean,
     val isFirst: Boolean,
-    val isLast: Boolean
+    val isLast: Boolean,
+    val color: Color = Color.Magenta
 )
 
 val listOfChars = listOf(

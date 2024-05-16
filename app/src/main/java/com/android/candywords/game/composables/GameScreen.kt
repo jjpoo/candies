@@ -24,6 +24,7 @@ fun GameScreen(
 
     MainBackground(
         hintCountText = hintCount,
+        isGameScreen = true,
         uiState = uiState,
         onShopClicked = { onShopClicked() },
         onMenuClicked = { onLobbyClicked() },

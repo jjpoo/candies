@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -25,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.android.candywords.R
 import com.android.candywords.data.Candy
-import com.android.candywords.data.candiesLevelFirst
+import com.android.candywords.data.db.candiesLevelFirst
 
 @Composable
 fun WordsBlock(
@@ -49,15 +50,17 @@ fun WordsBlock(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             candies.forEach { candy ->
+                val text = candy.name.joinToString(separator = "") { it.uppercase() }
+
                 if (candy.isOpened) {
                     TextWithShadow(
-                        candy = candy
+                        textStr = text
                     )
                 } else
                     OutlinedText(
                         modifier = Modifier,
                         lineHeight = TextUnit(17.18F, TextUnitType.Unspecified),
-                        text = candy.name.forEach { it.uppercase() }.toString(),
+                        text = text,
                         fontSize = 15.sp
                     )
             }
@@ -67,7 +70,7 @@ fun WordsBlock(
 
 @Composable
 fun TextWithShadow(
-    candy: Candy,
+    textStr: String,
     modifier: Modifier = Modifier,
     color: Color = colorResource(id = R.color.purple_outline)
 ) {
@@ -78,14 +81,16 @@ fun TextWithShadow(
             val (text, line) = createRefs()
 
             OutlinedText(
-                modifier = Modifier.constrainAs(text) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                },
+                modifier = Modifier
+                    .constrainAs(text) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
+                    .alpha(0.5f),
                 lineHeight = TextUnit(17.18F, TextUnitType.Unspecified),
-                text = candy.name.forEach { it.uppercase() }.toString(),
+                text = textStr,
                 fontSize = 15.sp
             )
 
@@ -103,7 +108,7 @@ fun TextWithShadow(
                         color = color,
                         start = Offset(-70f, 0f),
                         end = Offset(70f, 0f),
-                        strokeWidth = 7f,
+                        strokeWidth = 8f,
                         cap = StrokeCap.Round
                     )
                 }

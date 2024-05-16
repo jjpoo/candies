@@ -8,4 +8,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="purple_outline">#64138C</color>
+    <color name="candy1_background">#F01EE8</color>
+    <color name="candy2_background">#1EF07F</color>
+    <color name="candy3_background">#F0511E</color>
 </resources>

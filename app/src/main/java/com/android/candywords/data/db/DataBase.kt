@@ -1,18 +1,22 @@
-package com.android.candywords.data
+package com.android.candywords.data.db
 
+import com.android.candywords.data.Candy
 import com.android.candywords.state.Item
 
 val candies = listOf(
     Candy(
+        1,
         listOf('c', 'a', 'n', 'd', 'y'),
         false
     ),
     Candy(
+        2,
         listOf('s', 'w', 'e', 'e', 't'),
         false
     ),
     Candy(
-        listOf(),
+        3,
+        listOf('s', 'u', 'g', 'a', 'r'),
         false
     )
 )

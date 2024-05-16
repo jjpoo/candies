@@ -22,7 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.android.candywords.R
-import com.android.candywords.data.candiesLevelFirst
+import com.android.candywords.data.db.candiesLevelFirst
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import com.android.candywords.utils.OutlinedText
@@ -53,6 +53,7 @@ fun MainBackground(
 
         Column {
             gameToolbar(money)
+
             if (isGameScreen) {
                 WordsBlock(
                     modifier = Modifier.padding(horizontal = 12.dp),
