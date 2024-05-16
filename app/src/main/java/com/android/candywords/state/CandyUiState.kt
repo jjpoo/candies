@@ -22,11 +22,11 @@ data class CandyUiState(
     val levelsLobby: List<Level> = levelItems,
     val isLevelPassed: Boolean = false,
     val currentLevel: LevelData = firstLevel,
-    val personSelection: List<Item> = listOf(),
+    val userSelection: List<Item> = listOf(),
     val money: Int = 0,
     val isMoneyEqualsOrLessZero: Boolean = false,
     val soundOptionsState: List<SoundOption> = soundOptions,
-    val color: Color = Color.Magenta
+    val color: Int = 0
 )
 
 data class Item(
@@ -34,36 +34,35 @@ data class Item(
     val character: Char,
     val isSelected: Boolean,
     val isFirst: Boolean,
-    val isLast: Boolean,
-    val color: Color = Color.Magenta
+    val isLast: Boolean
 )
 
-val listOfChars = listOf(
-    Item(1, 'A', isSelected = false, isFirst = true, isLast = false),
-    Item(2, 'b', isSelected = false, isFirst = false, isLast = false),
-    Item(3, 'c', isSelected = false, isFirst = false, isLast = false),
-    Item(4, 'd', isSelected = false, isFirst = false, isLast = false),
-    Item(5, 'e', isSelected = false, isFirst = false, isLast = false),
-    Item(6, 'f', isSelected = false, isFirst = false, isLast = false),
-    Item(7, 'j', isSelected = false, isFirst = false, isLast = false),
-    Item(11, 'k', isSelected = false, isFirst = false, isLast = false),
-    Item(13, 'l', isSelected = false, isFirst = false, isLast = false),
-    Item(100, 'A', isSelected = false, isFirst = false, isLast = false),
-    Item(290, 'b', isSelected = false, isFirst = false, isLast = false),
-    Item(300, 'c', isSelected = false, isFirst = false, isLast = false),
-    Item(43, 'd', isSelected = false, isFirst = false, isLast = false),
-    Item(54, 'e', isSelected = false, isFirst = false, isLast = false),
-    Item(65, 'f', isSelected = false, isFirst = false, isLast = false),
-    Item(735, 'j', isSelected = false, isFirst = false, isLast = false),
-    Item(1153, 'k', isSelected = false, isFirst = false, isLast = false),
-    Item(1353, 'l', isSelected = false, isFirst = false, isLast = false),
-    Item(443, 'd', isSelected = false, isFirst = false, isLast = false),
-    Item(504, 'e', isSelected = false, isFirst = false, isLast = false),
-    Item(650, 'f', isSelected = false, isFirst = false, isLast = false),
-    Item(7350, 'j', isSelected = false, isFirst = false, isLast = false),
-    Item(1103, 'k', isSelected = false, isFirst = false, isLast = false),
-    Item(1303, 'l', isSelected = false, isFirst = true, isLast = false)
-)
+//val listOfChars = listOf(
+//    Item(1, 'A', isSelected = false, isFirst = true, isLast = false),
+//    Item(2, 'b', isSelected = false, isFirst = false, isLast = false),
+//    Item(3, 'c', isSelected = false, isFirst = false, isLast = false),
+//    Item(4, 'd', isSelected = false, isFirst = false, isLast = false),
+//    Item(5, 'e', isSelected = false, isFirst = false, isLast = false),
+//    Item(6, 'f', isSelected = false, isFirst = false, isLast = false),
+//    Item(7, 'j', isSelected = false, isFirst = false, isLast = false),
+//    Item(11, 'k', isSelected = false, isFirst = false, isLast = false),
+//    Item(13, 'l', isSelected = false, isFirst = false, isLast = false),
+//    Item(100, 'A', isSelected = false, isFirst = false, isLast = false),
+//    Item(290, 'b', isSelected = false, isFirst = false, isLast = false),
+//    Item(300, 'c', isSelected = false, isFirst = false, isLast = false),
+//    Item(43, 'd', isSelected = false, isFirst = false, isLast = false),
+//    Item(54, 'e', isSelected = false, isFirst = false, isLast = false),
+//    Item(65, 'f', isSelected = false, isFirst = false, isLast = false),
+//    Item(735, 'j', isSelected = false, isFirst = false, isLast = false),
+//    Item(1153, 'k', isSelected = false, isFirst = false, isLast = false),
+//    Item(1353, 'l', isSelected = false, isFirst = false, isLast = false),
+//    Item(443, 'd', isSelected = false, isFirst = false, isLast = false),
+//    Item(504, 'e', isSelected = false, isFirst = false, isLast = false),
+//    Item(650, 'f', isSelected = false, isFirst = false, isLast = false),
+//    Item(7350, 'j', isSelected = false, isFirst = false, isLast = false),
+//    Item(1103, 'k', isSelected = false, isFirst = false, isLast = false),
+//    Item(1303, 'l', isSelected = false, isFirst = true, isLast = false)
+//)
 
 enum class ToolbarIcons(val isShown: Boolean, val iconRes: Int) {
     LOBBY(isShown = true, iconRes = R.drawable.ic_menu_hdpi),

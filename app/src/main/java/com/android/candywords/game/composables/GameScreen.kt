@@ -1,11 +1,13 @@
 package com.android.candywords.game.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,7 +25,6 @@ import com.android.candywords.utils.GameToolbar
 @Composable
 fun GameScreen(
     candies: List<String>,
-    money: Int,
     hintCount: Int,
     uiState: CandyUiState,
     onShopClicked: () -> Unit,
@@ -48,7 +49,7 @@ fun GameScreen(
                     listOfToolbarItems = listOfItems.requireNoNulls(),
                     toolbarIconModifier = Modifier,
                     isGameScreen = true,
-                    money = money,
+                    money = uiState.money,
                     onItemClicked = {
                         when (it) {
                             ToolbarIcons.SHOP.name -> onShopClicked()
@@ -63,40 +64,48 @@ fun GameScreen(
                 uiEvent = uiEvent
             )
         }
-//        if (uiState.currentLevel.isCompleted) {
-        Image(
-            painter = painterResource(id = R.drawable.bg_shadow_win_mdpi),
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center),
-            contentScale = ContentScale.Fit,
-            contentDescription = null
-        )
-        Image(
-            painter = painterResource(id = R.drawable.popup_bear),
-            modifier = Modifier
-                .fillMaxSize()
-                .align(Alignment.Center),
-            contentScale = ContentScale.Fit,
-            contentDescription = null
-        )
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            val imagesRes =
-                listOf(R.drawable.ic_restart_mdpi, R.drawable.ic_play_mdpi, R.drawable.ic_home_mdpi)
+        if (uiState.currentLevel.isCompleted) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_shadow_win_mdpi),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop,
+                contentDescription = null
+            )
+            Image(
+                painter = painterResource(id = R.drawable.popup_bear),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Fit,
+                contentDescription = null
+            )
+            Row(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(top = 210.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                val imagesRes =
+                    listOf(
+                        R.drawable.ic_restart_mdpi,
+                        R.drawable.ic_play_mdpi,
+                        R.drawable.ic_home_mdpi
+                    )
 
-            imagesRes.forEach { image ->
-                Image(
-                    painter = painterResource(id = image),
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier,
-                    contentDescription = null
-                )
+                imagesRes.forEach { image ->
+                    Image(
+                        painter = painterResource(id = image),
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .size(65.dp),
+                        contentDescription = null
+                    )
+                }
             }
         }
-//        }
     }
 }
 
@@ -109,7 +118,6 @@ fun GameScreendPreview() {
         onLobbyClicked = {},
         uiState = CandyUiState(),
         uiEvent = {},
-        hintCount = 2,
-        money = 50
+        hintCount = 2
     )
 }

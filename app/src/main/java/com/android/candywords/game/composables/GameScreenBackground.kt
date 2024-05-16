@@ -66,15 +66,17 @@ fun MainBackground(
             Modifier.align(Alignment.Center)
         )
 
-        BottomBox(
-            isShopScreen = isShopScreen,
-            modifier = Modifier.align(Alignment.BottomCenter),
-            hintCountText = hintCountText,
-            // Just for testing
-            onHintClicked = {
-                uiEvent(CandyUiEvent.OpenLevel(it))
-            }
-        )
+        if (!uiState.currentLevel.isCompleted) {
+            BottomBox(
+                isShopScreen = isShopScreen,
+                modifier = Modifier.align(Alignment.BottomCenter),
+                hintCountText = hintCountText,
+                // Just for testing
+                onHintClicked = {
+                    uiEvent(CandyUiEvent.OpenLevel(it))
+                }
+            )
+        }
     }
 }
 
@@ -97,7 +99,7 @@ fun BottomBox(
                 .offset { IntOffset(0, 185) },
         )
 
-        if (isShopScreen == false) {
+        if (!isShopScreen) {
             ConstraintLayout(
                 modifier = Modifier
                     .clickable {
