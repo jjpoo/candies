@@ -1,10 +1,10 @@
-package com.android.candywords
+package com.android.candywords.main
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import com.android.candywords.connectivity.ConnectivityObserver
 import com.android.candywords.data.Level
-import com.android.candywords.data.SettingOption
+import com.android.candywords.data.SoundOption
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,12 +25,36 @@ class MainViewModel : ViewModel() {
             is CandyUiEvent.ShowNoInternetConnectionPopup -> handleShowNoInternetConnectionPopup(
                 uiEvent.showPopup
             )
+
             is CandyUiEvent.OnSettingsSelected -> handleOnSettingsSelected(uiEvent.selectedItem)
             is CandyUiEvent.OpenLevel -> handleOpenLevel(uiEvent.number)
             is CandyUiEvent.UpdateLevelsState -> handleUpdateLevelState(uiEvent.levels)
+            is CandyUiEvent.OnSoundSelected -> handleOnSoundSelected(uiEvent.selectedSoundId)
             else -> {}
         }
     }
+
+    private fun handleOnSoundSelected(selectedItem: Int) {
+        val soundOptionsState = _state.value.soundOptionsState
+
+        val updatedSoundsOptionsState = soundOptionsState.map {
+            it.copy(
+                isSelected = selectedItem == it.id
+            )
+        }
+
+        _state.value = _state.value.copy(
+            soundOptionsState = updatedSoundsOptionsState
+        )
+    }
+
+    /** Money **/
+    fun updateMoneyState(money: Int) {
+        _state.value = _state.value.copy(
+            money = money
+        )
+    }
+    /** Money **/
 
     /** Connectivity **/
     private fun handleShowNoInternetConnectionPopup(showPopup: Boolean) {
@@ -54,7 +78,7 @@ class MainViewModel : ViewModel() {
     }
 
     private fun handleOnSettingsSelected(selectedItem: Int) {
-        val updatedOptions = _state.value.settings.mapIndexed { index, settingOption ->
+        val updatedOptions = _state.value.soundOptionsState.mapIndexed { index, settingOption ->
             if (selectedItem == index) {
                 settingOption.copy(
                     isSelected = !settingOption.isSelected
@@ -62,12 +86,12 @@ class MainViewModel : ViewModel() {
             } else settingOption
         }
         Log.e("SAVED ITEMS", "$updatedOptions")
-        _state.value = _state.value.copy(settings = updatedOptions)
+        _state.value = _state.value.copy(soundOptionsState = updatedOptions)
     }
 
-    fun setSettings(settings: List<SettingOption>) {
+    fun setSettings(settings: List<SoundOption>) {
         _state.value = _state.value.copy(
-            settings = settings
+            soundOptionsState = settings
         )
     }
 

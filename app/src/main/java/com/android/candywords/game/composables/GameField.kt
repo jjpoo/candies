@@ -1,4 +1,4 @@
-package com.android.candywords.game
+package com.android.candywords.game.composables
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -60,7 +60,6 @@ fun GameField(
     val selectedIdSet = rememberSaveable {
         mutableStateOf(emptySet<Int>())
     }
-    val inSelectionMode by remember { derivedStateOf { selectedIdSet.value.isNotEmpty() } }
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -87,7 +86,8 @@ fun GameField(
                     .charactersDragHandler(
                         lazyGridState = state,
                         selectedIdSet = selectedIdSet,
-                        uiEvent = uiEvent
+                        uiEvent = uiEvent,
+                        uiState = uiState
                     )
                     .constrainAs(grid) {
                         start.linkTo(image.start)
@@ -109,30 +109,6 @@ fun GameField(
                         isSelected = selected,
                         modifier = Modifier
                     )
-//                            .semantics {
-//                                if (!inSelectionMode) {
-//                                    onLongClick("Select") {
-//                                        selectedIdSet.value += item.id
-//                                        true
-//                                    }
-//                                }
-//                            }
-//                            .then(
-//                                if (inSelectionMode) {
-//                                    Modifier.toggleable(
-//                                        value = item.isSelected,
-//                                        indication = null,
-//                                        interactionSource = remember { MutableInteractionSource() },
-//                                        onValueChange = {
-//                                            if (it) {
-//                                                selectedIdSet.value += item.id
-//                                            } else {
-//                                                selectedIdSet.value -= item.id
-//                                            }
-//                                        }
-//                                    )
-//                                } else Modifier
-//                            ))
                 }
             }
         }
@@ -144,7 +120,8 @@ fun GameField(
 fun Modifier.charactersDragHandler(
     lazyGridState: LazyGridState,
     selectedIdSet: MutableState<Set<Int>>,
-    uiEvent: (CandyUiEvent) -> Unit
+    uiEvent: (CandyUiEvent) -> Unit,
+    uiState: CandyUiState
 ) = pointerInput(Unit) {
 
     fun LazyGridState.gridItemKeyAtPosition(hitPoint: Offset): Int? =
@@ -165,7 +142,7 @@ fun Modifier.charactersDragHandler(
                 }
             }
             Log.e("CURRENT KEY THAT IS First", "$initialKey")
-            uiEvent(CandyUiEvent.UpdateFirstItemCornerRadius(fisrtItemId = selectedIdSet.value.first()))
+//            uiEvent(CandyUiEvent.UpdateFirstItemCornerRadius(fisrtItemId = selectedIdSet.value.first()))
         },
         onDrag = { change, dragAmount ->
             if (initialKey != null) {
@@ -180,11 +157,9 @@ fun Modifier.charactersDragHandler(
                 val isPureHorizontal = absY <= tolerance
                 val isPureVertical = absX <= tolerance
 
-                val isDiagonal = !isPureHorizontal && !isPureVertical &&
-                        (distanceRatio < (1 - tolerance) || distanceRatio > (1 + tolerance));
-
-//                if (!isDiagonal) {
                 Log.e("PURE VALUE", "x:$absX y:$absY")
+
+
                 lazyGridState.gridItemKeyAtPosition(change.position)?.let { key ->
                     if (currentKey != null) {
 
@@ -206,9 +181,17 @@ fun Modifier.charactersDragHandler(
 //            uiEvent(CandyUiEvent.UpdateLastItemCornerRadius(secondItemId = selectedIdSet.value.last()))
         },
         onDragEnd = {
+            var list = mutableListOf<Char>()
+
             Log.e("CURRENT KEY THAT IS LAST", "${selectedIdSet.value.last()}")
-            uiEvent(CandyUiEvent.UpdateLastItemCornerRadius(secondItemId = selectedIdSet.value.last()))
             initialKey = null
+//            val listOfItems = uiState.currentLevel.characters.toList().filter {
+//                selectedIdSet.value.contains(it.id)
+//            }
+            uiEvent(
+                CandyUiEvent.GetSelectedCharacters(listOfChars = selectedIdSet.value.toList())
+            )
+//        }
         }
     )
 }

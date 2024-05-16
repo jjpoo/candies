@@ -14,5 +14,6 @@ sealed class CandyUiEvent {
     data class UpdateLastItemCornerRadius(val secondItemId: Int) : CandyUiEvent()
     data class OpenLevel(val number: Int) : CandyUiEvent()
     data class UpdateLevelsState(val levels: List<Level>) : CandyUiEvent()
-    data class GetSelectedCharacters(val listOfChars: List<Char>) : CandyUiEvent()
+    data class GetSelectedCharacters(val listOfChars: List<Int>) : CandyUiEvent()
+    data class OnSoundSelected(val selectedSoundId: Int) : CandyUiEvent()
 }

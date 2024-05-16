@@ -44,7 +44,7 @@ fun NoInternetConnectionScreen(
         firstItemAlpha = 0f,
         isGameScreen = false,
         onItemClicked = {
-            uiEvent(CandyUiEvent.OnSettingsClicked)
+            uiEvent(CandyUiEvent.ShowNoInternetConnectionPopup(false))
         }
     )
     NoInternetContent(

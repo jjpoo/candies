@@ -7,5 +7,6 @@ enum class MainNavGraph(val route: String) {
 
 enum class GameNavGraph(val route: String) {
     GAME(route = "game"),
-    LOBBY(route = "lobby")
+    LOBBY(route = "lobby"),
+    SHOP(route = "shop")
 }

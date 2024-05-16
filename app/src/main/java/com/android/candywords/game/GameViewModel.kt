@@ -3,6 +3,7 @@ package com.android.candywords.game
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.candywords.data.SoundOption
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,25 +67,76 @@ class GameViewModel : ViewModel() {
         )
     }
 
-    private fun handleSelectedCharacters(selectedCharacters: List<Char>) {
-        val selectedWord = selectedCharacters.toString()
+    private fun handleSelectedCharacters(selectedCharacters: List<Int>) {
 
-        val unswears = _state.value.currentLevel.listOfCandies
+        val listOfCharsByIds = _state.value.currentLevel.characters.filter {
+            it.id in selectedCharacters
+        }.filter { !it.isSelected }
+        Log.e("list of items", "${listOfCharsByIds}")
 
-        val compareCharacters = unswears.map { candyUnswear ->
-            val isWordsEquals = candyUnswear.name.compareTo(selectedWord, ignoreCase = true)
-            if (isWordsEquals == 0) {
-                candyUnswear.copy(
-                    isOpened = !candyUnswear.isOpened
-                )
-            } else {
-                candyUnswear
+        _state.value = _state.value.copy(
+            personSelection = listOfCharsByIds
+        )
+
+        val string = listOfCharsByIds.map {
+            it.character
+        }
+        Log.e("STRING", "$string")
+
+        _state.value.currentLevel.listOfCandies.map { candy ->
+            val isStringsEquals = candy.name == string
+            if (isStringsEquals) {
+                updateCharacterSelectedState()
+                Log.e("Personal Selection", "${_state.value.personSelection}")
             }
         }
-        val updatedCurrentLevelState =
-            _state.value.currentLevel.copy(listOfCandies = compareCharacters)
+
+
+//        val compareCharacters =
+//        val compareCharacters = unswears.map { candyUnswear ->
+//            val isWordsEquals = candyUnswear.name.compareTo(selectedWord, ignoreCase = true)
+//            if (isWordsEquals == 0) {
+//                candyUnswear.copy(
+//                    isOpened = !candyUnswear.isOpened
+//                )
+//            } else {
+//                candyUnswear
+//            }
+//        }
+//        val updatedCurrentLevelState =
+//            _state.value.currentLevel.copy(listOfCandies = compareCharacters)
+//        _state.value = _state.value.copy(
+//            currentLevel = updatedCurrentLevelState
+//        )
+    }
+
+    private fun updateCharacterSelectedState() {
+        val personalSelection = _state.value.personSelection
+        val listWithUpdatedSelection = personalSelection.map {
+            it.copy(
+                isSelected = !it.isSelected
+            )
+        }
         _state.value = _state.value.copy(
-            currentLevel = updatedCurrentLevelState
+            personSelection = listWithUpdatedSelection
+        )
+    }
+
+    fun updateMoneyState(money: Int) {
+        if (money <= 0) {
+            _state.value = _state.value.copy(
+                isMoneyEqualsOrLessZero = true
+            )
+        } else {
+            _state.value = _state.value.copy(
+                money = money
+            )
+        }
+    }
+
+    fun setSettings(settings: List<SoundOption>) {
+        _state.value = _state.value.copy(
+            soundOptionsState = settings
         )
     }
 }

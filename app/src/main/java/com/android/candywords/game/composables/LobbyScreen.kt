@@ -1,4 +1,4 @@
-package com.android.candywords.game
+package com.android.candywords.game.composables
 
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -46,6 +46,7 @@ fun LobbyScreen(
             onShopClicked = { /*TODO*/ },
             onMenuClicked = { /*TODO*/ },
             uiEvent = uiEvent,
+            uiState = uiState,
             gameToolbar = {
                 LobbyToolbar(
                     onHomeClicked = onHomeClicked

@@ -3,4 +3,5 @@
     <string name="please_wait">Please wait</string>
     <string name="something_went_wrong">Something went\n wrong. Do you want\n to retry?</string>
     <string name="x">x%d</string>
+    <string name="you_dont_have_enough_couns">You don\'t have enough coins</string>
 </resources>

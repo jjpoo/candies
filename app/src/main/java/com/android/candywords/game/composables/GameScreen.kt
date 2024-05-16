@@ -1,4 +1,4 @@
-package com.android.candywords.game
+package com.android.candywords.game.composables
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -24,7 +24,7 @@ fun GameScreen(
 
     MainBackground(
         hintCountText = hintCount,
-        candies = candies,
+        uiState = uiState,
         onShopClicked = { onShopClicked() },
         onMenuClicked = { onLobbyClicked() },
         uiEvent = uiEvent,

@@ -119,6 +119,7 @@ fun MainScreen(
                 toolbarIconModifier = Modifier,
                 isGameScreen = false,
                 onItemClicked = {
+
                     when (it) {
                         ToolbarIcons.SHOP.name -> onShopClicked()
                         ToolbarIcons.SETTINGS.name -> {
@@ -188,6 +189,7 @@ fun MainScreen(
                     saveSettings()
                 },
                 onCrossClicked = {
+
                     uiEvent(CandyUiEvent.OnSettingsClicked)
                 }
             )

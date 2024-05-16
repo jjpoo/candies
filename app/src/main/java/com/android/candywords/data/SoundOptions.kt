@@ -1,6 +1,7 @@
 package com.android.candywords.data
 
-data class SettingOption(
+data class SoundOption(
+    val id: Int,
     val name: String,
     val isSelected: Boolean = false
 )

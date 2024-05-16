@@ -4,15 +4,15 @@ import com.android.candywords.state.Item
 
 val candies = listOf(
     Candy(
-        "candy",
+        listOf('c', 'a', 'n', 'd', 'y'),
         false
     ),
     Candy(
-        "sweet",
+        listOf('s', 'w', 'e', 'e', 't'),
         false
     ),
     Candy(
-        "sweet",
+        listOf(),
         false
     )
 )

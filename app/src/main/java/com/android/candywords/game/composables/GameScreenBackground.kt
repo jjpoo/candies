@@ -1,4 +1,4 @@
-package com.android.candywords.game
+package com.android.candywords.game.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.android.candywords.R
+import com.android.candywords.data.candiesLevelFirst
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
 import com.android.candywords.utils.OutlinedText
@@ -31,12 +32,13 @@ import com.android.candywords.utils.WordsBlock
 fun MainBackground(
     money: Int = 50,
     hintCountText: Int = 0,
-    isGameScreen: Boolean = true,
+    uiState: CandyUiState,
+    isShopScreen: Boolean = false,
+    isGameScreen: Boolean = false,
     uiEvent: (CandyUiEvent) -> Unit,
-    onShopClicked: () -> Unit,
-    onMenuClicked: () -> Unit,
+    onShopClicked: () -> Unit = {},
+    onMenuClicked: () -> Unit = {},
     gameToolbar: @Composable (Int) -> Unit,
-    candies: List<String> = listOf(),
     gameField: @Composable (Modifier) -> Unit
 ) {
     Box(
@@ -51,11 +53,10 @@ fun MainBackground(
 
         Column {
             gameToolbar(money)
-
             if (isGameScreen) {
                 WordsBlock(
                     modifier = Modifier.padding(horizontal = 12.dp),
-                    candies = candies
+                    candies = uiState.currentLevel.listOfCandies
                 )
             }
         }
@@ -65,6 +66,7 @@ fun MainBackground(
         )
 
         BottomBox(
+            isShopScreen = isShopScreen,
             modifier = Modifier.align(Alignment.BottomCenter),
             hintCountText = hintCountText,
             // Just for testing
@@ -77,11 +79,11 @@ fun MainBackground(
 
 @Composable
 fun BottomBox(
+    isShopScreen: Boolean,
     modifier: Modifier = Modifier,
     hintCountText: Int,
     onHintClicked: (Int) -> Unit
 ) {
-
     Box(
         modifier = modifier.height(height = 255.dp)
     ) {
@@ -94,48 +96,50 @@ fun BottomBox(
                 .offset { IntOffset(0, 185) },
         )
 
-        ConstraintLayout(
-            modifier = Modifier
-                .clickable {
-                    onHintClicked(1)
-                }
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-        ) {
-            val (hintIcon, hintCount, hintText) = createRefs()
+        if (isShopScreen == false) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .clickable {
+                        onHintClicked(1)
+                    }
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+            ) {
+                val (hintIcon, hintCount, hintText) = createRefs()
 
-            Image(
-                painter = painterResource(id = R.drawable.ic_hints_hdpi),
-                modifier = Modifier
-                    .constrainAs(hintIcon) {
-                        bottom.linkTo(parent.bottom)
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
+                Image(
+                    painter = painterResource(id = R.drawable.ic_hints_hdpi),
+                    modifier = Modifier
+                        .constrainAs(hintIcon) {
+                            bottom.linkTo(parent.bottom)
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                        .size(80.dp),
+                    contentDescription = null
+                )
+                Image(
+                    painter = painterResource(id = R.drawable.ic_hint_count_hdpi),
+                    modifier = Modifier
+                        .constrainAs(hintCount) {
+                            end.linkTo(hintIcon.end)
+                            bottom.linkTo(hintIcon.bottom)
+                        }
+                        .size(40.dp),
+                    contentDescription = null
+                )
+                OutlinedText(
+                    text = stringResource(id = R.string.x, hintCountText),
+                    fontSize = 15.sp,
+                    modifier = Modifier.constrainAs(hintText) {
+                        end.linkTo(hintCount.end)
+                        bottom.linkTo(hintCount.bottom)
+                        top.linkTo(hintCount.top)
+                        start.linkTo(hintCount.start)
                     }
-                    .size(80.dp),
-                contentDescription = null
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_hint_count_hdpi),
-                modifier = Modifier
-                    .constrainAs(hintCount) {
-                        end.linkTo(hintIcon.end)
-                        bottom.linkTo(hintIcon.bottom)
-                    }
-                    .size(40.dp),
-                contentDescription = null
-            )
-            OutlinedText(
-                text = stringResource(id = R.string.x, hintCountText),
-                fontSize = 15.sp,
-                modifier = Modifier.constrainAs(hintText) {
-                    end.linkTo(hintCount.end)
-                    bottom.linkTo(hintCount.bottom)
-                    top.linkTo(hintCount.top)
-                    start.linkTo(hintCount.start)
-                }
-            )
+                )
+            }
         }
     }
 }
@@ -143,15 +147,19 @@ fun BottomBox(
 @Preview
 @Composable
 fun MainBackgroundPreview() {
-    MainBackground(
-        candies = listOf("Candy", "Sweet", "Sugar"),
-        hintCountText = 2,
-        onShopClicked = {},
-        onMenuClicked = {},
-        gameToolbar = {},
-        uiEvent = {},
-        gameField = {
-            GameField(modifier = it, uiState = CandyUiState(), uiEvent = {})
-        }
+    WordsBlock(
+        modifier = Modifier.padding(horizontal = 12.dp),
+        candies = candiesLevelFirst
     )
+//    MainBackground(
+//        candies = listOf("Candy", "Sweet", "Sugar"),
+//        hintCountText = 2,
+//        onShopClicked = {},
+//        onMenuClicked = {},
+//        gameToolbar = {},
+//        uiEvent = {},
+//        gameField = {
+//            GameField(modifier = it, uiState = CandyUiState(), uiEvent = {})
+//        }
+//    )
 }

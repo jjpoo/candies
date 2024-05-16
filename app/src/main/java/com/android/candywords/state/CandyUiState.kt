@@ -4,14 +4,13 @@ import com.android.candywords.R
 import com.android.candywords.connectivity.ConnectivityObserver
 import com.android.candywords.data.Level
 import com.android.candywords.data.LevelData
-import com.android.candywords.data.SettingOption
-import com.android.candywords.data.SettingOptionsNames
+import com.android.candywords.data.SoundOption
 import com.android.candywords.data.firstLevel
 import com.android.candywords.data.levelItems
+import com.android.candywords.data.soundOptions
 
 data class CandyUiState(
     val isAchievementsShown: Boolean = false,
-    val settings: List<SettingOption> = listOfSettings,
     val isMenuScreenVisible: Boolean = false,
     val isSettingsShown: Boolean = false,
     val connectivityStatus: ConnectivityObserver.Status = ConnectivityObserver.Status.Available,
@@ -21,7 +20,11 @@ data class CandyUiState(
     val levelsData: List<LevelData> = listOf(),
     val levelsLobby: List<Level> = levelItems,
     val isLevelPassed: Boolean = false,
-    val currentLevel: LevelData = firstLevel
+    val currentLevel: LevelData = firstLevel,
+    val personSelection: List<Item> = listOf(),
+    val money: Int = 0,
+    val isMoneyEqualsOrLessZero: Boolean = false,
+    val soundOptionsState: List<SoundOption> = soundOptions
 )
 
 data class Item(
@@ -57,21 +60,6 @@ val listOfChars = listOf(
     Item(7350, 'j', isSelected = false, isFirst = false, isLast = false),
     Item(1103, 'k', isSelected = false, isFirst = false, isLast = false),
     Item(1303, 'l', isSelected = false, isFirst = true, isLast = false)
-)
-
-val listOfSettings = listOf(
-    SettingOption(
-        name = SettingOptionsNames.MUSIC.name,
-        isSelected = false
-    ),
-    SettingOption(
-        name = SettingOptionsNames.SOUND.name,
-        isSelected = false
-    ),
-    SettingOption(
-        name = SettingOptionsNames.VIBRATION.name,
-        isSelected = false
-    )
 )
 
 enum class ToolbarIcons(val isShown: Boolean, val iconRes: Int) {

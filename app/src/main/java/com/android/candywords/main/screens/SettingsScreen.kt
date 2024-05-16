@@ -57,7 +57,7 @@ fun SettingsScreen(
     )
     SettingsContent(
         state = state,
-        onSettingItemClicked = {
+        onSoundSelected = {
             Log.e("NAME", "${it}")
             uiEvent(CandyUiEvent.OnSettingsSelected(it))
         },
@@ -71,7 +71,7 @@ fun SettingsScreen(
 @Composable
 fun SettingsContent(
     state: CandyUiState,
-    onSettingItemClicked: (Int) -> Unit = {},
+    onSoundSelected: (Int) -> Unit = {},
     onSaveClicked: () -> Unit
 ) {
     ConstraintLayout(
@@ -103,7 +103,7 @@ fun SettingsContent(
                     bottom.linkTo(box.bottom)
                 }
                 .padding(horizontal = 50.dp),
-            onSettingItemClicked = onSettingItemClicked
+            onSoundSelected = onSoundSelected
         )
 
         Image(
@@ -144,18 +144,18 @@ fun SettingsContent(
 fun SettingsItems(
     modifier: Modifier = Modifier,
     state: CandyUiState,
-    onSettingItemClicked: (Int) -> Unit = {}
+    onSoundSelected: (Int) -> Unit = {}
 ) {
     Column(
         modifier = modifier.padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(25.dp)
     ) {
-        state.settings.forEachIndexed { index, item ->
+        state.soundOptionsState.forEachIndexed { index, item ->
             SettingsItemRow(
                 text = item.name,
                 isToggled = item.isSelected,
                 onClick = {
-                    onSettingItemClicked(index)
+                    onSoundSelected(index)
                 }
             )
         }

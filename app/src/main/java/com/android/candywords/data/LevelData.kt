@@ -11,7 +11,7 @@ data class LevelData(
 )
 
 data class Candy(
-    val name: String,
+    val name: List<Char>,
     val isOpened: Boolean
 )
 
