@@ -2,10 +2,6 @@ package com.android.candywords.game.composables
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.keyframes
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -55,19 +50,12 @@ fun GameField(
 ) {
 
     LaunchedEffect(Unit) {
-        uiEvent(CandyUiEvent.UpdateCurrentColor(color = R.color.candy1_background))
+        uiEvent(CandyUiEvent.UpdateColorForOneItem(itemId = R.color.candy1_background))
     }
 
     val state = rememberLazyGridState()
     val selectedIdSet = rememberSaveable {
         mutableStateOf(emptySet<Int>())
-    }
-    var imageResultRes = rememberSaveable {
-        mutableStateOf(0)
-    }
-
-    var isAnimationVisible = rememberSaveable {
-        mutableStateOf(false)
     }
 
     var isFirstItem = rememberSaveable {
@@ -76,8 +64,6 @@ fun GameField(
     var isLastItem = rememberSaveable {
         mutableStateOf(false)
     }
-
-//    SetUpColor(uiState = uiState, uiEvent = uiEvent)
 
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -97,39 +83,9 @@ fun GameField(
                     .fillMaxSize()
             )
 
-            val completedList = uiState.currentLevel.listOfCandies.filter { it.isOpened }
-
-            completedList.forEach {
-                when (it.id) {
-                    1 -> {
-                        imageResultRes.value = R.drawable.text_nice_mdpi
-                    }
-
-                    2 -> {
-                        imageResultRes.value = R.drawable.text_fine_mdpi
-                    }
-
-                    3 -> {
-                        imageResultRes.value = R.drawable.text_good_mdpi
-                    }
-                }
-            }
-
-            AnimatedVisibility(
-                visible = isAnimationVisible.value,
-                enter = fadeIn(
-                    animationSpec = keyframes {
-                        this.durationMillis = 1000
-                    }
-                ),
-                exit = fadeOut(
-                    animationSpec = keyframes {
-                        this.durationMillis = 1000
-                    }
-                )
-            ) {
+            if (uiState.niceFineGoodState != 0) {
                 Image(
-                    painter = painterResource(imageResultRes.value),
+                    painter = painterResource(id = uiState.niceFineGoodState),
                     contentDescription = null,
                     modifier = Modifier
                         .constrainAs(result) {
@@ -144,6 +100,7 @@ fun GameField(
                     contentScale = ContentScale.Fit,
                 )
             }
+
             LazyVerticalGrid(
                 state = state,
                 columns = GridCells.Fixed(uiState.currentLevel.columnsCount),
@@ -238,6 +195,9 @@ fun Modifier.charactersDragHandler(
                         Log.e("CURRENT KEY THAT IS LAST", "$currentKey")
                         currentKey = key
                     }
+                    uiEvent(
+                        CandyUiEvent.UpdateColorForOneItem(key)
+                    )
                 }
             }
         },
@@ -291,7 +251,7 @@ fun GameFieldPreview() {
 fun GameItem() {
     LetterItem(
         modifier = Modifier,
-        item = Item(1, 'C', true, true, false),
+        item = Item(1, 'C', true, true, false, R.color.candy1_background),
         isSelected = false,
         color = R.color.candy1_background
     )

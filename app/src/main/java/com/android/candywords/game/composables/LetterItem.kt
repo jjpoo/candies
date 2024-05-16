@@ -44,10 +44,9 @@ fun LetterItem(
                 ) else RoundedCornerShape(0.dp)
             )
             .background(
-                if (isSelected) colorResource(id = color)
+                if (isSelected) colorResource(id = item.color).copy(alpha = 0.5f)
                 else Color.Transparent
             )
-        //color.copy(alpha = 0.5f)
     ) {
         OutlinedText(
             modifier = Modifier.align(Alignment.Center),

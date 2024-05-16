@@ -16,5 +16,5 @@ sealed class CandyUiEvent {
     data class UpdateLevelsState(val levels: List<Level>) : CandyUiEvent()
     data class GetSelectedCharacters(val listOfChars: List<Char>) : CandyUiEvent()
     data class OnSoundSelected(val selectedSoundId: Int) : CandyUiEvent()
-    data class UpdateCurrentColor(val color: Int) : CandyUiEvent()
+    data class UpdateColorForOneItem(val itemId: Int) : CandyUiEvent()
 }

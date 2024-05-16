@@ -87,7 +87,6 @@ class GameActivity : ComponentActivity() {
                     GameScreen(
                         candies = listOf(),
                         // Testing, Remove after complete
-                        money = 50,
                         hintCount = 3,
                         uiState = uiState.value,
                         uiEvent = viewModel::handleUiEvent,

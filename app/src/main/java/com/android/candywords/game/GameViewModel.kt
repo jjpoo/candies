@@ -1,10 +1,9 @@
 package com.android.candywords.game
 
 import android.util.Log
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.candywords.data.Level
+import com.android.candywords.R
 import com.android.candywords.data.SoundOption
 import com.android.candywords.state.CandyUiEvent
 import com.android.candywords.state.CandyUiState
@@ -24,7 +23,7 @@ class GameViewModel : ViewModel() {
             is CandyUiEvent.UpdateFirstItemCornerRadius -> handleUpdateFirstItemShape(uiEvent.fisrtItemId)
             is CandyUiEvent.UpdateLastItemCornerRadius -> handleUpdateLastItemShape(uiEvent.secondItemId)
             is CandyUiEvent.GetSelectedCharacters -> handleSelectedCharacters(uiEvent.listOfChars)
-            is CandyUiEvent.UpdateCurrentColor -> updateCurrentColor(uiEvent.color)
+            is CandyUiEvent.UpdateColorForOneItem -> updateItemColor(uiEvent.itemId)
             else -> {}
         }
     }
@@ -70,18 +69,6 @@ class GameViewModel : ViewModel() {
         )
     }
 
-    private fun handleSelectedCharacters(selectedCharacters: List<Char>) {
-        _state.value.currentLevel.listOfCandies.mapIndexed { index, candy ->
-            val isStringsEquals = candy.name == selectedCharacters
-            if (isStringsEquals) {
-                updateResultState(index)
-            }
-            Log.e("Is items equals", "$isStringsEquals")
-        }
-        updateLevelState()
-        Log.e("Level State", "${_state.value.currentLevel.listOfCandies.map { it.isOpened }}")
-    }
-
     private fun updateLevelState() {
         val currentLevel = _state.value.currentLevel
 
@@ -96,7 +83,7 @@ class GameViewModel : ViewModel() {
         Log.e("is level completed", "${updatedLevel.isCompleted}")
     }
 
-    private fun updateResultState(indexToUpdate: Int) {
+    private fun handleUpdateCandyOpenState(indexToUpdate: Int) {
 
         val candies = _state.value.currentLevel.listOfCandies
 
@@ -116,8 +103,80 @@ class GameViewModel : ViewModel() {
         Log.e("UPDATED ITEM CANDY", "$updatedCandyState")
     }
 
+    private fun handleSelectedCharacters(selectedCharacters: List<Char>) {
+        _state.value.currentLevel.listOfCandies.mapIndexed { index, candy ->
+            val isStringsEquals = candy.name == selectedCharacters
+            if (isStringsEquals) {
+                handleUpdateCandyOpenState(index)
+                when (index) {
+                    0 -> {
+                        updateCurrentColor(color = R.color.candy2_background)
+                    }
 
-    private fun updateCurrentColor(color: Color) {
+                    1 -> {
+                        updateCurrentColor(color = R.color.candy3_background)
+                    }
+                }
+                updateNiceGoodFineState()
+            }
+            Log.e("Is items equals", "$isStringsEquals")
+        }
+        updateLevelState()
+        Log.e("Level State", "${_state.value.currentLevel.listOfCandies.map { it.isOpened }}")
+    }
+
+    private fun updateNiceGoodFineState() {
+        val candyState = _state.value.currentLevel.listOfCandies
+        candyState.forEachIndexed { index, candy ->
+            if (candy.isOpened) {
+                when (index) {
+                    0 -> {
+                        _state.value = _state.value.copy(
+                            niceFineGoodState = R.drawable.text_nice_mdpi
+                        )
+                    }
+
+                    1 -> {
+                        _state.value = _state.value.copy(
+                            niceFineGoodState = R.drawable.text_fine_mdpi
+                        )
+                    }
+
+                    2 -> {
+                        _state.value = _state.value.copy(
+                            niceFineGoodState = R.drawable.text_good_mdpi
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    // new for updating color in a concrete char
+    private fun updateItemColor(itemId: Int) {
+
+        val colorId = if (_state.value.color != 0) {
+            _state.value.color
+        } else {
+            R.color.candy1_background
+        }
+
+        val updatedCharacters = _state.value.currentLevel.characters.map {
+            if (it.id == itemId) {
+                it.copy(color = colorId)
+            } else {
+                it
+            }
+        }
+
+        val updatedLevel = _state.value.currentLevel.copy(characters = updatedCharacters)
+
+        _state.value = _state.value.copy(
+            currentLevel = updatedLevel
+        )
+    }
+
+    private fun updateCurrentColor(color: Int) {
         _state.value = _state.value.copy(
             color = color
         )
