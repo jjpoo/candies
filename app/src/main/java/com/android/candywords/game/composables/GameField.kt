@@ -307,6 +307,7 @@ fun GameFieldPreview() {
         GameField(
             uiState = CandyUiState(
                 currentLevel = LevelData(
+                    1,
                     6,
                     charactersLevelFirst,
                     candies,

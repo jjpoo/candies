@@ -78,20 +78,24 @@ class GameViewModel : ViewModel() {
             }
             Log.e("Is items equals", "$isStringsEquals")
         }
+        updateLevelState()
+        Log.e("Level State", "${_state.value.currentLevel.listOfCandies.map { it.isOpened }}")
     }
 
     private fun updateLevelState() {
         val currentLevel = _state.value.currentLevel
 
         val updatedLevel = currentLevel.copy(
-            isCompleted = true
+            isCompleted = !_state.value.currentLevel.isCompleted
         )
         if (_state.value.currentLevel.listOfCandies.all { it.isOpened }) {
             _state.value = _state.value.copy(
                 currentLevel = updatedLevel
             )
         }
+        Log.e("is level completed", "${updatedLevel.isCompleted}")
     }
+
     private fun updateResultState(indexToUpdate: Int) {
 
         val candies = _state.value.currentLevel.listOfCandies
