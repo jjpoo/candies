@@ -28,38 +28,22 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    private fun handleUpdateFirstItemShape(fisrtItemId: Int) {
-        viewModelScope.launch {
-
-            val listWithRoundedCornerItems = _state.value.currentLevel.characters.map { item ->
-                if (fisrtItemId == item.id) {
-                    item.copy(
-                        isFirst = !item.isFirst
-                    )
-                } else item
-            }
-            val updatedCurrentLevelValue =
-                _state.value.currentLevel.copy(characters = listWithRoundedCornerItems)
-
-            _state.value = _state.value.copy(currentLevel = updatedCurrentLevelValue)
-
-            Log.e(
-                "rounded items:",
-                "${listWithRoundedCornerItems.get(fisrtItemId)}"
+    fun updateMoneyState(money: Int) {
+        if (money <= 0) {
+            _state.value = _state.value.copy(
+                isMoneyEqualsOrLessZero = true
+            )
+        } else {
+            _state.value = _state.value.copy(
+                money = money
             )
         }
     }
 
-    private fun handleUpdateLastItemShape(secondItemId: Int) {
-        val updateLastItem = _state.value.currentLevel.characters.map { item ->
-            if (secondItemId == item.id) {
-                item.copy(
-                    isLast = !item.isLast
-                )
-            } else item
-        }
-        val updatedCurrentLevelValue = _state.value.currentLevel.copy(characters = updateLastItem)
-        _state.value = _state.value.copy(currentLevel = updatedCurrentLevelValue)
+    fun setSettings(settings: List<SoundOption>) {
+        _state.value = _state.value.copy(
+            soundOptionsState = settings
+        )
     }
 
     private fun handleSetUpLevel() {
@@ -119,7 +103,6 @@ class GameViewModel : ViewModel() {
                 }
                 updateNiceGoodFineState()
             }
-            Log.e("Is items equals", "$isStringsEquals")
         }
         updateLevelState()
         Log.e("Level State", "${_state.value.currentLevel.listOfCandies.map { it.isOpened }}")
@@ -152,7 +135,7 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    // new for updating color in a concrete char
+    /** Item Color **/
     private fun updateItemColor(itemId: Int) {
 
         val colorId = if (_state.value.color != 0) {
@@ -182,21 +165,32 @@ class GameViewModel : ViewModel() {
         )
     }
 
-    fun updateMoneyState(money: Int) {
-        if (money <= 0) {
-            _state.value = _state.value.copy(
-                isMoneyEqualsOrLessZero = true
-            )
-        } else {
-            _state.value = _state.value.copy(
-                money = money
-            )
+    /** Item Color **/
+
+    /** Item Shape **/
+    private fun handleUpdateFirstItemShape(firstCharId: Int) {
+        viewModelScope.launch {
+            val listWithRoundedCornerItems = _state.value.currentLevel.characters.map { item ->
+                if (firstCharId == item.id) {
+                    item.copy(isFirst = !item.isFirst)
+                } else item
+            }
+            val updatedCurrentLevelValue =
+                _state.value.currentLevel.copy(characters = listWithRoundedCornerItems)
+            _state.value = _state.value.copy(currentLevel = updatedCurrentLevelValue)
         }
     }
 
-    fun setSettings(settings: List<SoundOption>) {
-        _state.value = _state.value.copy(
-            soundOptionsState = settings
-        )
+    private fun handleUpdateLastItemShape(secondItemId: Int) {
+        val updateLastItem = _state.value.currentLevel.characters.map { item ->
+            if (secondItemId == item.id) {
+                item.copy(
+                    isLast = !item.isLast
+                )
+            } else item
+        }
+        val updatedCurrentLevelValue = _state.value.currentLevel.copy(characters = updateLastItem)
+        _state.value = _state.value.copy(currentLevel = updatedCurrentLevelValue)
     }
+    /** Item Shape **/
 }

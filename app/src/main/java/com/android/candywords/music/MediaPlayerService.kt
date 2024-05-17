@@ -1,4 +1,4 @@
-package music
+package com.android.candywords.music
 
 import android.app.Service
 import android.content.Context

@@ -22,12 +22,13 @@ import com.android.candywords.connectivity.ConnectivityObserverImpl
 import com.android.candywords.data.SharedPrefsManager
 import com.android.candywords.data.SoundOption
 import com.android.candywords.game.GameActivity
+import com.android.candywords.launcher.LauncherScreen
 import com.android.candywords.main.screens.MainScreen
+import com.android.candywords.music.MediaPlayerService
 import com.android.candywords.navigation.MainNavGraph
 import com.android.candywords.ui.theme.CandyWordsTheme
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import music.MediaPlayerService
 
 class MainActivity : ComponentActivity() {
 
@@ -77,14 +78,15 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setInitialMoneyValue()
 
         getSettings(settings = viewModel.state.value.soundOptionsState)
 
+        /** Handle Connectivity Status **/
         connectivityObserver = ConnectivityObserverImpl(applicationContext)
         observeConnectivityStatus(connectivityObserver)
         getInitialConnectivityStatus(connectivityObserver = connectivityObserver)
+        /** Handle Connectivity Status **/
 
         setContent {
             val uiState = viewModel.state.collectAsState()
@@ -93,10 +95,12 @@ class MainActivity : ComponentActivity() {
             val isTapSoundSelected = uiState.value.soundOptionsState.get(1).isSelected
             setUpSound(uiState.value.soundOptionsState)
 
+            val isAnimated = intent.getBooleanExtra(GameActivity.IS_ANIMATED, true)
+
             CandyWordsTheme {
                 NavHost(
                     navController = navController,
-                    startDestination = MainNavGraph.Launcher.route
+                    startDestination = if (isAnimated) MainNavGraph.Launcher.route else MainNavGraph.Menu.route
                 ) {
                     composable(
                         route = MainNavGraph.Launcher.route,
@@ -107,6 +111,32 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
+                        LauncherScreen(
+                            state = uiState.value,
+                            uiEvent = viewModel::handleUiEvent,
+                            onPlayClicked = {
+                                setSoundOnClick(isTapSoundSelected)
+                                navigateToGameScreen()
+                            },
+                            onShopClicked = {
+                                setSoundOnClick(isTapSoundSelected)
+                                navigateToShopScreen()
+                            },
+                            closeApp = {
+                                setSoundOnClick(isTapSoundSelected)
+                                finish()
+                            },
+                            saveSettings = {
+                                saveSettings(uiState.value.soundOptionsState)
+                            },
+                            retry = {
+                                setSoundOnClick(isTapSoundSelected)
+                                this@MainActivity.recreate()
+                            }
+                        )
+                    }
+
+                    composable(MainNavGraph.Menu.route) {
                         MainScreen(
                             state = uiState.value,
                             uiEvent = viewModel::handleUiEvent,

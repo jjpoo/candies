@@ -17,15 +17,16 @@ import androidx.navigation.compose.rememberNavController
 import com.android.candywords.connectivity.ConnectivityObserver
 import com.android.candywords.data.Hint
 import com.android.candywords.data.Level
+import com.android.candywords.data.LevelData
 import com.android.candywords.data.SharedPrefsManager
 import com.android.candywords.data.SoundOption
 import com.android.candywords.game.composables.GameScreen
 import com.android.candywords.game.composables.LobbyScreen
 import com.android.candywords.game.composables.ShopScreen
 import com.android.candywords.main.MainActivity
+import com.android.candywords.music.MediaPlayerService
 import com.android.candywords.navigation.GameNavGraph
 import com.android.candywords.state.CandyUiState
-import music.MediaPlayerService
 
 class GameActivity : ComponentActivity() {
 
@@ -84,12 +85,15 @@ class GameActivity : ComponentActivity() {
                 startDestination = startedScreen
             ) {
                 composable(route = GameNavGraph.GAME.route) {
+
                     GameScreen(
-                        candies = listOf(),
                         // Testing, Remove after complete
                         hintCount = 3,
                         uiState = uiState.value,
                         uiEvent = viewModel::handleUiEvent,
+                        savePassedLevel = {
+                            saveLevelState(it)
+                        },
                         onShopClicked = {
                             setSoundOnClick(isTapSoundSelected)
                             navController.navigate(GameNavGraph.SHOP.route)
@@ -97,9 +101,17 @@ class GameActivity : ComponentActivity() {
                         onLobbyClicked = {
                             setSoundOnClick(isTapSoundSelected)
                             navController.navigate(GameNavGraph.LOBBY.route)
+                        },
+                        onButtonClicked = { buttonIndex ->
+                            when (buttonIndex) {
+                                0 -> handleOnRestartClicked()
+                                1 -> handleOnPlayClicked(1)
+                                2 -> handleOnHomeClicked()
+                            }
                         }
                     )
                 }
+
                 composable(route = GameNavGraph.LOBBY.route) {
                     LobbyScreen(
                         uiState = uiState.value,
@@ -110,7 +122,7 @@ class GameActivity : ComponentActivity() {
                         },
                         onHomeClicked = {
                             setSoundOnClick(isTapSoundSelected)
-                            saveLevelState(state = uiState.value)
+                            saveLevelState(level = uiState.value.currentLevel)
                             finish()
                             // this is start animation from sratch, not that i need
 //                            navigateToHomeScreen()
@@ -119,7 +131,6 @@ class GameActivity : ComponentActivity() {
                 }
 
                 composable(route = GameNavGraph.SHOP.route) {
-
                     ShopScreen(
                         uiState = uiState.value,
                         uiEvent = viewModel::handleUiEvent,
@@ -154,6 +165,25 @@ class GameActivity : ComponentActivity() {
         }
     }
 
+    private fun handleOnRestartClicked() {
+        val intent = Intent(this, GameActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+    }
+
+    private fun handleOnPlayClicked(currentLevelNumber: Int) {
+        when (currentLevelNumber) {
+            0 -> {}
+        }
+    }
+
+    private fun handleOnHomeClicked() {
+        val intent = Intent(this@GameActivity, MainActivity::class.java)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        intent.putExtra(IS_ANIMATED, false)
+        startActivity(intent)
+    }
+
     private fun setSoundForWin(isSoundSelected: Boolean) {
         if (isSoundSelected) {
             playerService?.startWinSound()
@@ -181,22 +211,20 @@ class GameActivity : ComponentActivity() {
         viewModel.updateMoneyState(newBugsCount)
     }
 
-    // save to shared prefs when level will change
-    private fun saveLevelState(state: CandyUiState) {
-        val levels = SharedPrefsManager.saveLevelState(this@GameActivity, state.levelsLobby)
-        Log.e("SAVED LEVELS:", "$levels")
+
+    //     save to shared prefs when level will change
+    private fun saveLevelState(level: LevelData) {
+        SharedPrefsManager.saveLevel(this@GameActivity, level)
+//        val levels = SharedPrefsManager.saveLevelState(this@GameActivity, state.levelsLobby)
+//        Log.e("SAVED LEVELS:", "$levels")
     }
 
-    private fun getLevelState(state: CandyUiState): List<Level> {
+    private fun getLevelState(state: CandyUiState): LevelData {
         return try {
             SharedPrefsManager.getLevelState(this)
         } catch (e: NullPointerException) {
-            state.levelsLobby
+            state.currentLevel
         }
-    }
-
-    private fun navigateToHomeScreen() {
-        startActivity(Intent(this@GameActivity, MainActivity::class.java))
     }
 
     private fun getSettings(settings: List<SoundOption>) {
@@ -207,5 +235,9 @@ class GameActivity : ComponentActivity() {
             val settingsInitialState: List<SoundOption> = settings
             viewModel.setSettings(settingsInitialState)
         }
+    }
+
+    companion object {
+        const val IS_ANIMATED = "is animated"
     }
 }

@@ -30,24 +30,43 @@ object SharedPrefsManager {
         )
     }
 
-    fun saveLevelState(context: Context, levels: List<Level>) {
-        val levelListString = Gson().toJson(levels)
+//    fun saveLevelState(context: Context, levels: List<Level>) {
+//        val levelListString = Gson().toJson(levels)
+//        val prefs = context.getSharedPreferences(CANDY_SHARED_PREFS, Context.MODE_PRIVATE)
+//        val editor = prefs.edit()
+//        editor.putString(LEVELS, levelListString)
+//        Log.e("SAVED SETTINGS", levelListString)
+//        editor.apply()
+//    }
+
+    fun saveLevel(context: Context, level: LevelData) {
+        val levelString = Gson().toJson(level)
         val prefs = context.getSharedPreferences(CANDY_SHARED_PREFS, Context.MODE_PRIVATE)
         val editor = prefs.edit()
-        editor.putString(LEVELS, levelListString)
-        Log.e("SAVED SETTINGS", levelListString)
+        Log.e("SAVED LEVEL", levelString)
         editor.apply()
     }
 
-    fun getLevelState(context: Context): List<Level> {
+    fun getLevelState(context: Context): LevelData {
         val prefs = context.getSharedPreferences(CANDY_SHARED_PREFS, Context.MODE_PRIVATE)
-        val levels = prefs.getString(LEVELS, "")
-        Log.e("SAVED LEVELS", "$levels")
+        val levelState = prefs.getString(LEVELS, "")
+        Log.e("SAVED LEVEL STATE", "$levelState")
         return Gson().fromJson(
-            levels,
-            object : TypeToken<List<Level>>() {}.type
+            levelState,
+            object : TypeToken<LevelData>() {}.type
         )
     }
+
+    /** Old Version for Saving Level State -> Suitable only for Lobby Screen **/
+//    fun getLevelState(context: Context): List<Level> {
+//        val prefs = context.getSharedPreferences(CANDY_SHARED_PREFS, Context.MODE_PRIVATE)
+//        val levels = prefs.getString(LEVELS, "")
+//        Log.e("SAVED LEVELS", "$levels")
+//        return Gson().fromJson(
+//            levels,
+//            object : TypeToken<List<Level>>() {}.type
+//        )
+//    }
 
     @SuppressLint("CommitPrefEdits")
     fun saveMoney(context: Context, money: Int) {

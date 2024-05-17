@@ -29,8 +29,7 @@ fun LetterItem(
     isLast: Boolean = false,
     isSelected: Boolean
 ) {
-    Log.e("SELECTED", "$isSelected")
-    Log.e("COLOR", "${color}")
+
     Box(
         modifier = modifier
             .size(52.dp)
@@ -38,7 +37,7 @@ fun LetterItem(
                 if (item.isFirst) RoundedCornerShape(
                     topStartPercent = 15,
                     bottomStartPercent = 15
-                ) else if (isLast) RoundedCornerShape(
+                ) else if (item.isLast) RoundedCornerShape(
                     topEnd = 15.dp,
                     bottomEnd = 15.dp
                 ) else RoundedCornerShape(0.dp)

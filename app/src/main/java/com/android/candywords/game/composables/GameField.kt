@@ -133,7 +133,6 @@ fun GameField(
                             )
                         }
                     }
-                    Log.e("SELECTED", "$selected")
 
                     LetterItem(
                         item = item,
@@ -176,8 +175,10 @@ fun Modifier.charactersDragHandler(
                     selectedIdSet.value += key
                 }
             }
+            uiEvent(
+                CandyUiEvent.UpdateFirstItemCornerRadius(requireNotNull(initialKey))
+            )
             selectedIdSet.value = emptySet()
-            Log.e("CURRENT KEY THAT IS First", "$initialKey")
         },
 
         onDrag = { change, dragAmount ->
@@ -192,7 +193,6 @@ fun Modifier.charactersDragHandler(
                             selectedIdSet.value = selectedIdSet.value
                                 .minus(currentKey!!)
                         }
-                        Log.e("CURRENT KEY THAT IS LAST", "$currentKey")
                         currentKey = key
                     }
                     uiEvent(
@@ -207,7 +207,6 @@ fun Modifier.charactersDragHandler(
         },
 
         onDragEnd = {
-            Log.e("CURRENT KEY THAT IS LAST", "${selectedIdSet.value.last()}")
             initialKey = null
 
             val listOfItems = uiState.currentLevel.characters.toList().filter {
@@ -220,6 +219,9 @@ fun Modifier.charactersDragHandler(
                 CandyUiEvent.GetSelectedCharacters(
                     listOfChars = listOfItems
                 )
+            )
+            uiEvent(
+                CandyUiEvent.UpdateLastItemCornerRadius(requireNotNull(currentKey?.minus(1)))
             )
         }
     )
